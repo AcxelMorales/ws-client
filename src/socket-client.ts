@@ -1,13 +1,21 @@
 import { Manager, Socket } from 'socket.io-client';
 
-export const connectToServer = () => {
-    const manager = new Manager('localhost:3000/socket.io/socket.io.js');
-    const socket = manager.socket('/');
+let socket: Socket;
 
-    addListeners(socket);
+export const connectToServer = (jwt: string) => {
+    const manager = new Manager('localhost:3000/socket.io/socket.io.js', {
+        extraHeaders: {
+            auth: jwt
+        }
+    });
+
+    socket?.removeAllListeners();
+    socket = manager.socket('/');
+
+    addListeners();
 };
 
-const addListeners = (socket: Socket) => {
+const addListeners = () => {
     const serverStatusLabel = document.querySelector<HTMLSpanElement>('#server-status')!;
     const clientsList = document.querySelector<HTMLUListElement>('#clients')!;
     const formMessage = document.querySelector<HTMLFormElement>('#form-message')!;

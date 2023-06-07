@@ -4,7 +4,13 @@ import { connectToServer } from './socket-client.ts';
 
 document.querySelector<HTMLDivElement>('#app')!.innerHTML = `
   <div>
-    <h1>Websocket - Client</h1>
+    <h2>Websocket - Client</h2>
+  
+    <input id="jwt" placeholder="JWT" autocomplete="off" />
+    <button id="btnJwt">Connect</button>
+
+    <br />
+
     <span id="server-status">Offline</span>
 
     <ul id="clients"></ul>
@@ -23,4 +29,10 @@ document.querySelector<HTMLDivElement>('#app')!.innerHTML = `
   </div>
 `;
 
-connectToServer();
+const jwt = document.querySelector<HTMLInputElement>('#jwt')!;
+const buttonJwt = document.querySelector<HTMLButtonElement>('#btnJwt')!;
+
+buttonJwt.addEventListener('click', () => {
+  if (jwt.value.trim().length === 0) return alert('Enter a valid JWT');
+  connectToServer(jwt.value);
+});
