@@ -8,8 +8,11 @@ export const connectToServer = () => {
 };
 
 const addListeners = (socket: Socket) => {
-    const serverStatusLabel = document.querySelector('#server-status')!;
-    const clientsList = document.querySelector('#clients')!;
+    const serverStatusLabel = document.querySelector<HTMLSpanElement>('#server-status')!;
+    const clientsList = document.querySelector<HTMLUListElement>('#clients')!;
+    const formMessage = document.querySelector<HTMLFormElement>('#form-message')!;
+    const txtMessage = document.querySelector<HTMLInputElement>('#txt-message')!;
+    const messages = document.querySelector<HTMLUListElement>('#messages')!;
 
     socket.on('connect', () => {
         serverStatusLabel.innerHTML = 'connected';
@@ -29,5 +32,30 @@ const addListeners = (socket: Socket) => {
         });
 
         clientsList.innerHTML = clientsHtml;
+    });
+
+    formMessage.addEventListener('submit', (event) => {
+        event.preventDefault();
+
+        socket.emit('message-client', {
+            id: socket.id,
+            message: txtMessage.value
+        });
+
+        txtMessage.value = '';
+    });
+
+    socket.on('message-server', (payload: { fullName: string, message: string }) => {
+        const messageHtml = `
+            <li>
+                <strong>${payload.fullName}</strong>
+                <span>${payload.message}</span>
+            </li>
+        `;
+
+        const li = document.createElement('li');
+        
+        li.innerHTML = messageHtml;
+        messages.appendChild(li);
     });
 }
